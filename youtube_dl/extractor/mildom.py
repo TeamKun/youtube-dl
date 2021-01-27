@@ -44,21 +44,28 @@ class MildomIE(InfoExtractor):
         webpage, handle = self._download_webpage_handle(webpage_url, video_id)
 
         response = self._download_json(
-            'https://cloudac.mildom.com/nonolive/gappserv/live/enterstudio?__platform=web&user_id=%s' % video_id, video_id,
+            'https://cloudac.mildom.com/nonolive/gappserv/live/enterstudio?__platform=web&user_id=%s' % video_id,
+            video_id,
             query={'_format': 'json'},
             headers={'Content-Type': 'application/json'},
             note='Downloading JSON metadata for %s' % video_id)
 
-        manifest = self._extract_f4m_formats(
-
+        formats = self._extract_m3u8_formats(
+            'https://do8w5ym3okkik.cloudfront.net/live/%s_master.m3u8' % video_id, video_id,
+            headers={'referer': 'https://www.mildom.com/'}
         )
+
+        self._sort_formats(formats)
+
+        for m in formats:
+            m['http_headers'] = {'referer': 'https://www.mildom.com/'}
 
         meta = response['body']
 
         return {
             'id': video_id,
             'title': meta['anchor_intro'],
-            'formats': meta['ext'],
+            'formats': formats,
             'thumbnail': meta['pic'],
             'description': meta['live_intro'],
             'uploader': meta['loginname'],
@@ -67,6 +74,7 @@ class MildomIE(InfoExtractor):
             'view_count': meta['viewers'],
             'duration': meta['live_start_ms'] - response['ts_ms'],
             'webpage_url': webpage_url,
+            'is_live': True,
         }
 
 
