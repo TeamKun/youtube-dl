@@ -651,6 +651,11 @@ from .microsoftvirtualacademy import (
     MicrosoftVirtualAcademyIE,
     MicrosoftVirtualAcademyCourseIE,
 )
+from .mildom import (
+    MildomIE,
+    MildomVodIE,
+    MildomUserVodIE,
+)
 from .minds import (
     MindsIE,
     MindsChannelIE,
